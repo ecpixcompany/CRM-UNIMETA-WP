@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM UNIMETA - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <!-- SIDEBAR - BARRA LATERAL ROJA -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="phone-icon">
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="logo-text">UNIMETA</div>
+            <button class="toggle-btn" id="toggleBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-comments"></i>
+                <span>Conversaciones</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Leads</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Analíticas</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- TOP BAR -->
+        <div class="top-bar">
+            <h1 class="page-title">Dashboard</h1>
+            <div class="top-bar-right">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-profile">
+                    <div class="profile-avatar">AC</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- KPI CARDS -->
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Leads Totales</span>
+                        <span class="kpi-icon"><i class="fas fa-users"></i></span>
+                    </div>
+                    <div class="kpi-value" data-type="number">1,247</div>
+                    <div class="kpi-change">
+                        <i class="fas fa-arrow-up"></i>
+                        +12.5% vs mes anterior
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Tiempo Respuesta</span>
+                        <span class="kpi-icon"><i class="fas fa-clock"></i></span>
+                    </div>
+                    <div class="kpi-value">2.4 min</div>
+                    <div class="kpi-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        -18% vs mes anterior
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Tasa Calificación</span>
+                        <span class="kpi-icon"><i class="fas fa-check-square"></i></span>
+                    </div>
+                    <div class="kpi-value" data-type="percentage">68%</div>
+                    <div class="kpi-change">
+                        <i class="fas fa-arrow-up"></i>
+                        +5.2% vs mes anterior
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Satisfacción</span>
+                        <span class="kpi-icon"><i class="fas fa-star"></i></span>
+                    </div>
+                    <div class="kpi-value">4.8/5</div>
+                    <div class="kpi-change">Sin cambios</div>
+                </div>
+            </div>
+
+            <!-- CONVERSION FUNNEL CHART -->
+            <div class="chart-section">
+                <h2 class="section-title">Embudo de Conversión</h2>
+                <div class="conversion-funnel">
+                    <div class="funnel-item">
+                        <span class="funnel-label">Contacto Inicial</span>
+                        <div class="funnel-bar stage-1"></div>
+                        <span class="funnel-value">1,247</span>
+                    </div>
+                    <div class="funnel-item">
+                        <span class="funnel-label">En Calificación</span>
+                        <div class="funnel-bar stage-2"></div>
+                        <span class="funnel-value">898</span>
+                    </div>
+                    <div class="funnel-item">
+                        <span class="funnel-label">Interesado</span>
+                        <div class="funnel-bar stage-3"></div>
+                        <span class="funnel-value">561</span>
+                    </div>
+                    <div class="funnel-item">
+                        <span class="funnel-label">Convertido</span>
+                        <div class="funnel-bar stage-4"></div>
+                        <span class="funnel-value">274</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT CONVERSATIONS TABLE -->
+            <div class="table-section">
+                <h2 class="section-title">Conversaciones Recientes</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Contacto</th>
+                                <th>Programa</th>
+                                <th>Ciudad</th>
+                                <th>Estado</th>
+                                <th>Última Actividad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="contact-cell">
+                                        <div class="contact-avatar">MC</div>
+                                        <div class="contact-info">
+                                            <h4>Maria Camila Rodriguez</h4>
+                                            <p>+57 310 456 7890</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Administración de Empresas</td>
+                                <td>Villavicencio</td>
+                                <td><span class="status-badge status-interesado">Interesado</span></td>
+                                <td>Hace 5 min</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="contact-cell">
+                                        <div class="contact-avatar">JA</div>
+                                        <div class="contact-info">
+                                            <h4>Juan Andrés Martínez</h4>
+                                            <p>+57 311 234 5678</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Ingeniería de Sistemas</td>
+                                <td>Acacías</td>
+                                <td><span class="status-badge status-nuevo">Nuevo</span></td>
+                                <td>Hace 12 min</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="contact-cell">
+                                        <div class="contact-avatar">LG</div>
+                                        <div class="contact-info">
+                                            <h4>Laura González Pérez</h4>
+                                            <p>+57 312 567 8901</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Contabilidad</td>
+                                <td>Puerto López</td>
+                                <td><span class="status-badge status-calificado">Calificado</span></td>
+                                <td>Hace 25 min</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="contact-cell">
+                                        <div class="contact-avatar">CF</div>
+                                        <div class="contact-info">
+                                            <h4>Carlos Fernández Ruiz</h4>
+                                            <p>+57 313 678 9012</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Derecho</td>
+                                <td>Bogotá</td>
+                                <td><span class="status-badge status-interesado">Interesado</span></td>
+                                <td>Hace 1 hora</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="contact-cell">
+                                        <div class="contact-avatar">SL</div>
+                                        <div class="contact-info">
+                                            <h4>Sandra López Moreno</h4>
+                                            <p>+57 314 789 0123</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Psicología</td>
+                                <td>Villavicencio</td>
+                                <td><span class="status-badge status-nuevo">Nuevo</span></td>
+                                <td>Hace 2 horas</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
