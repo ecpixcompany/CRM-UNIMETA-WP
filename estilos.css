@@ -1727,6 +1727,45 @@ select.form-input:disabled {
     color: var(--color-text-lighter);
 }
 
+/* ========================================
+   ESTILOS PARA VISTAS DE LEADS
+   ======================================== */
+
+/* Contenedor flexible para el encabezado del listado */
+.leads-list-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Botón para crear nuevo lead - tamaño pequeño */
+#createLeadBtn {
+    align-self: flex-start;
+    margin-top: 5px;
+    padding: 6px 10px;
+    font-size: 11px;
+    flex: none;
+    width: auto;
+}
+
+/* Alineación centrada para encabezados de tabla */
+.th-center {
+    text-align: center;
+}
+
+/* Avatar de lead en modal - tamaño reducido */
+#newLeadAvatar {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+}
+
+/* Botones ocultos al cargar (se muestran en modo edición) */
+#saveBtn,
+#cancelBtn {
+    display: none;
+}
+
 .chat-header-actions {
     display: flex;
     align-items: center;
