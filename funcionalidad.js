@@ -26,6 +26,8 @@ function initSidebar() {
     // Navegar entre elementos
     navItems.forEach((item) => {
         item.addEventListener('click', (e) => {
+            e.preventDefault();
+
             // Remover clase active de todos los items
             navItems.forEach((nav) => nav.classList.remove('active'));
 
@@ -37,15 +39,7 @@ function initSidebar() {
                 sidebar.classList.remove('active');
             }
 
-            // Si el item tiene un href válido, permitir la navegación hacia allí
-            const href = item.getAttribute('href');
-            if (href && href !== '#') {
-                // Permitir navegación natural al hacer clic
-                return true;
-            }
-
-            // Si no tiene href válido, prevenir comportamiento por defecto
-            e.preventDefault();
+            // Aquí puedes agregar lógica de navegación
             handleNavigation(item.textContent.trim());
         });
     });
@@ -863,6 +857,10 @@ const newInitCRM = function() {
         initLeadsModule();
     }
 
+    if (document.getElementById('messagingModule')) {
+        initMessagingModule();
+    }
+
     // Agregar estilos de animación si no existen
     if (!document.getElementById('animation-styles')) {
         const style = document.createElement('style');
@@ -900,4 +898,3 @@ document.addEventListener('DOMContentLoaded', () => {
 window.CRM.initLeadsModule = initLeadsModule;
 window.CRM.updateLeadDisplay = updateLeadDisplay;
 window.CRM.disableEditMode = disableEditMode;
-window.CRM.initCreateLeadForm = initCreateLeadForm;
