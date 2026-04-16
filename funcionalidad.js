@@ -113,6 +113,8 @@ const DEFAULT_SETTINGS = {
   ],
 };
 
+// Obtiene la lista de programas académicos desde la API de Strapi
+// Muestra los datos en: selects con id 'programa' (formularios de leads)
 async function getPrograms() {
   const request = await fetch("https://strapi.ecpixcompany.com/api/programas", {
     method: "GET",
@@ -127,6 +129,8 @@ async function getPrograms() {
   return response.data.map((item) => item.nombre);
 }
 
+// Crea un objeto de actividad con estructura estándar para la trazabilidad de leads
+// Se utiliza internamente para generar actividades de demostración y logs de cambios
 function createSeedActivity(tipo, titulo, descripcion, fecha, meta = []) {
   return {
     id: `${tipo}-${Math.random().toString(16).slice(2, 10)}`,
@@ -138,6 +142,8 @@ function createSeedActivity(tipo, titulo, descripcion, fecha, meta = []) {
   };
 }
 
+// Crea un objeto de mensaje con estructura estándar para conversaciones
+// Se utiliza internamente para generar mensajes de demostración
 function createSeedMessage(tipo, texto, fecha) {
   return {
     id: `${tipo}-${Math.random().toString(16).slice(2, 10)}`,
@@ -444,10 +450,14 @@ const CRM_STATE = {
   currentPipelineLeadId: null,
 };
 
+// Realiza una copia profunda de un objeto mediante serialización JSON
+// Utilizado para crear snapshots de leads y evitar modificaciones accidentales
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+// Obtiene la configuración de runtime del CRM incluyendo Strapi y endpoints
+// Retorna objeto con valores por defecto si no están configurados
 function getRuntimeConfig() {
   const runtimeConfig = window.CRM_CONFIG || {};
   const defaultLeadFields = LEAD_FIELD_DEFINITIONS.filter((field) =>
@@ -481,6 +491,8 @@ function getRuntimeConfig() {
   };
 }
 
+// Asegura que los datos demo iniciales estén en localStorage
+// Crea las colecciones de leads, conversaciones y configuración si no existen
 function ensureLocalSeedData() {
   if (!localStorage.getItem(CRM_STORAGE_KEYS.settings)) {
     writeStorage(CRM_STORAGE_KEYS.settings, clone(DEFAULT_SETTINGS));
@@ -495,6 +507,8 @@ function ensureLocalSeedData() {
   }
 }
 
+// Lee datos de localStorage con opción de retornar valor por defecto
+// Incluye manejo de errores para localStorage no disponible
 function readStorage(key, fallbackValue) {
   try {
     const raw = localStorage.getItem(key);
@@ -505,6 +519,8 @@ function readStorage(key, fallbackValue) {
   }
 }
 
+// Guarda datos en localStorage en formato JSON
+// Incluye manejo de errores para localStorage lleno o no disponible
 function writeStorage(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -513,6 +529,8 @@ function writeStorage(key, value) {
   }
 }
 
+// Lee un campo de un objeto fuente con múltiples llaves alternativas
+// útil para compatibilidad con datos de diferentes fuentes (Strapi, localStorage, etc)
 function readField(source, keys, defaultValue = "") {
   for (const key of keys) {
     if (source[key] !== undefined && source[key] !== null && source[key] !== "") {
@@ -523,6 +541,7 @@ function readField(source, keys, defaultValue = "") {
   return defaultValue;
 }
 
+// Normaliza texto eliminando acentos y convirtiéndolo a minúsculas para búsquedas
 function normalizeText(value) {
   return String(value || "")
     .toLowerCase()
@@ -530,10 +549,12 @@ function normalizeText(value) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+// Genera un ID único con prefijo basado en timestamp y número aleatorio
 function createId(prefix) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
 
+// Obtiene la clave única de un lead para sincronización entre Strapi y localStorage
 function getLeadKey(lead) {
   return String(
     lead.documentId ||
@@ -542,6 +563,8 @@ function getLeadKey(lead) {
   );
 }
 
+// Normaliza datos de una actividad para compatibilidad con estructura estándar
+// Soporta múltiples formatos de entrada (Strapi, localStorage, etc)
 function normalizeActivity(item = {}) {
   const meta = Array.isArray(item.meta) ? item.meta : [];
 
@@ -555,6 +578,8 @@ function normalizeActivity(item = {}) {
   };
 }
 
+// Normaliza datos de un lead desde múltiples fuentes (Strapi, localStorage, etc)
+// Ordena actividades por fecha descendente y estandariza todos los campos
 function normalizeLead(item = {}) {
   const source =
     item.attributes && typeof item.attributes === "object" ?
@@ -600,6 +625,8 @@ function normalizeLead(item = {}) {
   };
 }
 
+// Normaliza datos de una conversación desde múltiples fuentes
+// Estandariza formato de mensajes y metadatos de la conversación
 function normalizeConversation(item = {}) {
   const source =
     item.attributes && typeof item.attributes === "object" ?
@@ -637,6 +664,8 @@ function normalizeConversation(item = {}) {
   };
 }
 
+// Normaliza datos de configuración del CRM con valores por defecto
+// Incluye programas, asesores, fuentes, estados, prioridades, tipos de acción y plantillas
 function normalizeSettings(item = {}) {
   return {
     programas:
@@ -670,6 +699,8 @@ function normalizeSettings(item = {}) {
   };
 }
 
+// Formatea una fecha en formato legible en español
+// Retorna "Sin registro" si la fecha no es válida
 function formatDate(dateValue, options = { dateStyle: "medium" }) {
   if (!dateValue) {
     return "Sin registro";
@@ -683,6 +714,7 @@ function formatDate(dateValue, options = { dateStyle: "medium" }) {
   return new Intl.DateTimeFormat("es-CO", options).format(date);
 }
 
+// Formatea una fecha en formato ISO (YYYY-MM-DD) para inputs HTML
 function formatDateForInput(dateValue) {
   if (!dateValue) {
     return "";
@@ -696,6 +728,7 @@ function formatDateForInput(dateValue) {
   return new Intl.DateTimeFormat("en-CA").format(date);
 }
 
+// Calcula y formatea el tiempo transcurrido desde una fecha (ej: "Hace 2 horas")
 function formatRelativeTime(dateValue) {
   if (!dateValue) {
     return "Sin registro";
@@ -725,6 +758,7 @@ function formatRelativeTime(dateValue) {
   return `Hace ${diffDays} dia${diffDays === 1 ? "" : "s"}`;
 }
 
+// Formatea minutos de respuesta a formato legible (ej: "2 h", "45 min")
 function formatResponseMinutes(minutes) {
   if (minutes <= 0) {
     return "Sin medicion";
@@ -738,10 +772,13 @@ function formatResponseMinutes(minutes) {
   return `${hours} h`;
 }
 
+// Genera nombre completo del lead combinando nombres y apellidos
 function getLeadFullName(lead = {}) {
   return `${lead.nombres || ""} ${lead.apellidos || ""}`.trim() || "Nuevo lead";
 }
 
+// Obtiene las iniciales del lead (primeras letras de nombre y apellido)
+// Muestra en: avatares de leads en listas, cards, conversaciones (#chatContactAvatar)
 function getLeadInitials(lead = {}) {
   return (
     `${lead.nombres?.charAt(0) || ""}${lead.apellidos?.charAt(0) || ""}`.toUpperCase() ||
@@ -749,22 +786,27 @@ function getLeadInitials(lead = {}) {
   );
 }
 
+// Obtiene metainformación (etiqueta, clase CSS, icono) para un estado de lead
 function getStatusMeta(status) {
   return CRM_STATUS_META[status] || CRM_STATUS_META.nuevo;
 }
 
+// Obtiene metainformación (etiqueta, clase CSS) para un nivel de prioridad
 function getPriorityMeta(priority) {
   return CRM_PRIORITY_META[priority] || CRM_PRIORITY_META.media;
 }
 
+// Convierte una clave de tipo acción a su etiqueta legible
 function getActionTypeLabel(type) {
   return CRM_ACTION_TYPE_META[type] || "Sin definir";
 }
 
+// Convierte una clave de fuente a su etiqueta legible (ej: "whatsapp" -> "WhatsApp")
 function getSourceLabel(source) {
   return CRM_SOURCE_META[source] || "Sin fuente";
 }
 
+// Obtiene la clase de icono FontAwesome para un tipo de actividad
 function getActivityIcon(type) {
   const iconMap = {
     email: "fa-envelope",
@@ -777,10 +819,12 @@ function getActivityIcon(type) {
   return iconMap[type] || "fa-circle-info";
 }
 
+// Verifica si un estado de lead es cerrado (matriculado, perdido, inactivo)
 function isClosedStatus(status) {
   return ["matriculado", "perdido", "inactivo"].includes(status);
 }
 
+// Verifica si una fecha de próxima acción de un lead está vencida
 function isLeadOverdue(lead) {
   if (!lead.fecha_proxima_accion || isClosedStatus(lead.estado)) {
     return false;
@@ -789,6 +833,8 @@ function isLeadOverdue(lead) {
   return new Date(lead.fecha_proxima_accion).getTime() < Date.now();
 }
 
+// Calcula el promedio de minutos de respuesta entre conversaciones
+// Muestra en: #messagingResponseCount en módulo de mensajería
 function averageResponseMinutes(conversations) {
   if (!conversations.length) {
     return 0;
@@ -801,6 +847,8 @@ function averageResponseMinutes(conversations) {
   return Math.round(total / conversations.length);
 }
 
+// Agrupa elementos por una clave generadora y cuenta ocurrencias
+// Muestra en: gráficos de analytics (analyticsFunnel, analyticsPrograms, etc)
 function countBy(items, keyGetter) {
   return items.reduce((accumulator, item) => {
     const key = keyGetter(item);
@@ -809,20 +857,24 @@ function countBy(items, keyGetter) {
   }, {});
 }
 
+// Ordena elementos por una llave de fecha de forma descendente (más recientes primero)
 function sortByNewest(items, key) {
   return [...items].sort((a, b) => new Date(b[key] || 0) - new Date(a[key] || 0));
 }
 
+// Busca un lead en el estado del CRM por su ID
 function getLeadById(leadId) {
   return CRM_STATE.leads.find((lead) => String(lead.id) === String(leadId));
 }
 
+// Busca una conversación en el estado del CRM por su ID
 function getConversationById(conversationId) {
   return CRM_STATE.conversations.find(
     (conversation) => String(conversation.id) === String(conversationId),
   );
 }
 
+// Construye URL de Strapi con ruta y parámetros de consulta
 function buildStrapiUrl(resourcePath = "", query = "") {
   const config = getRuntimeConfig();
   const cleanPath = resourcePath ? `/${resourcePath.replace(/^\/+/, "")}` : "";
@@ -835,6 +887,7 @@ function buildStrapiUrl(resourcePath = "", query = "") {
   return `${config.strapiBaseUrl}${config.strapiApiPath}${cleanPath}${cleanQuery}`;
 }
 
+// Construye headers HTTP requeridos para peticiones a Strapi
 function getStrapiHeaders(includeJson = true) {
   const headers = {};
   if (includeJson) {
@@ -848,6 +901,7 @@ function getStrapiHeaders(includeJson = true) {
   return headers;
 }
 
+// Realiza una petición HTTP genérica a Strapi con manejo de errores
 async function requestStrapi(resourcePath = "", options = {}) {
   const response = await fetch(buildStrapiUrl(resourcePath, options.query), {
     method: options.method || "GET",
@@ -872,6 +926,8 @@ async function requestStrapi(resourcePath = "", options = {}) {
   return response.json();
 }
 
+// Fusiona leads remotos de Strapi con leads locales del localStorage
+// Prioriza datos remotos pero mantiene actividades y notas locales si es necesario
 function mergeRemoteLeadsWithLocal(remoteLeads, localLeads) {
   const localMap = new Map(localLeads.map((lead) => [getLeadKey(lead), lead]));
   const merged = remoteLeads.map((remoteLead) => {
@@ -897,6 +953,7 @@ function mergeRemoteLeadsWithLocal(remoteLeads, localLeads) {
   return [...merged, ...localOnly];
 }
 
+// Carga la colección de leads desde Strapi o localStorage (fallback demo)
 async function loadLeadsCollection() {
   const config = getRuntimeConfig();
   const localLeads = readStorage(CRM_STORAGE_KEYS.leads, []).map(normalizeLead);
@@ -926,16 +983,19 @@ async function loadLeadsCollection() {
   }
 }
 
+// Carga la colección de conversaciones desde localStorage
 async function loadConversationCollection() {
   return readStorage(CRM_STORAGE_KEYS.conversations, []).map(normalizeConversation);
 }
 
+// Carga la configuración del CRM (asesores, programas, etc) desde localStorage
 function loadSettingsCollection() {
   return normalizeSettings(
     readStorage(CRM_STORAGE_KEYS.settings, clone(DEFAULT_SETTINGS)),
   );
 }
 
+// Reemplaza un lead en el estado del CRM y guarda en localStorage
 function replaceLeadInState(lead) {
   const normalizedLead = normalizeLead(lead);
   const index = CRM_STATE.leads.findIndex(
@@ -952,6 +1012,7 @@ function replaceLeadInState(lead) {
   return normalizedLead;
 }
 
+// Reemplaza una conversación en el estado del CRM y guarda en localStorage
 function replaceConversationInState(conversation) {
   const normalizedConversation = normalizeConversation(conversation);
   const index = CRM_STATE.conversations.findIndex(
@@ -968,6 +1029,7 @@ function replaceConversationInState(conversation) {
   return normalizedConversation;
 }
 
+// Construye el payload de un lead para enviar a Strapi según campos escribibles
 function buildLeadPayloadForStrapi(lead) {
   const config = getRuntimeConfig();
   const payload = {};
@@ -979,6 +1041,8 @@ function buildLeadPayloadForStrapi(lead) {
   return payload;
 }
 
+// Guarda un lead en Strapi (o localStorage si Strapi no está disponible)
+// Soporta crear nuevo lead o actualizar existente
 async function saveLead(lead, mode = "update") {
   const config = getRuntimeConfig();
   const normalizedLead = normalizeLead(lead);
@@ -1024,6 +1088,8 @@ async function saveLead(lead, mode = "update") {
   }
 }
 
+// Añade una actividad a la trazabilidad de un lead
+// Muestra en: #leadTimelineList (hoja de vida del lead con timeline completo)
 function appendLeadActivity(leadId, activity) {
   const lead = getLeadById(leadId);
   if (!lead) {
@@ -1039,12 +1105,14 @@ function appendLeadActivity(leadId, activity) {
   replaceLeadInState(updatedLead);
 }
 
+// Limpia todos los elementos hijo de un nodo DOM
 function clearElement(element) {
   if (element) {
     element.replaceChildren();
   }
 }
 
+// Establece el contenido de texto de un elemento por selector
 function setTextContent(selector, value) {
   const element =
     typeof selector === "string" ? document.querySelector(selector) : selector;
@@ -1053,12 +1121,15 @@ function setTextContent(selector, value) {
   }
 }
 
+// Crea un elemento <i> de FontAwesome con la clase de icono especificada
 function createIconNode(iconClass) {
   const icon = document.createElement("i");
   icon.className = `fas ${iconClass}`;
   return icon;
 }
 
+// Crea un badge HTML con el estado del lead (color y icono)
+// Muestra en: listas de leads, tableros, detalles (#leadMetaChips, statusCell)
 function createStatusBadge(status) {
   console.log("🐼 ~ status:", status);
   const meta = getStatusMeta(status);
@@ -1071,6 +1142,8 @@ function createStatusBadge(status) {
   return badge;
 }
 
+// Crea un badge HTML con el nivel de prioridad del lead
+// Muestra en: listas de leads, tableros kanban (#pipelineCard priorityBadge)
 function createPriorityBadge(priority) {
   const meta = getPriorityMeta(priority);
   const badge = document.createElement("span");
@@ -1079,6 +1152,7 @@ function createPriorityBadge(priority) {
   return badge;
 }
 
+// Crea un estado vacío genérico para mostrar cuando no hay datos
 function createEmptyState(message) {
   const wrapper = document.createElement("div");
   wrapper.className = "empty-state";
@@ -1086,6 +1160,7 @@ function createEmptyState(message) {
   return wrapper;
 }
 
+// Popula un select HTML con opciones y placeholders
 function populateSelect(select, values, placeholder, selectedValue = "") {
   if (!select) {
     return;
@@ -1119,6 +1194,8 @@ function populateSelect(select, values, placeholder, selectedValue = "") {
   });
 }
 
+// Actualiza el chip de modo de datos (Demo o Strapi) en la UI
+// Muestra en: #dataModeChip en la navbar superior
 function updateDataModeChip() {
   const chip = document.getElementById("dataModeChip");
   if (!chip) {
@@ -1129,6 +1206,7 @@ function updateDataModeChip() {
   chip.classList.toggle("mode-chip-strapi", CRM_STATE.dataMode === "strapi");
 }
 
+// Muestra una notificación toast temporal en la parte inferior de la pantalla
 function showToast(message, tone = "info") {
   let container = document.getElementById("crmToastContainer");
 
@@ -1150,6 +1228,8 @@ function showToast(message, tone = "info") {
   }, 2600);
 }
 
+// Actualiza el badge de notificaciones con cantidad de tareas vencidas y conversaciones sin respuesta
+// Muestra en: .notification-badge en navbar
 function updateNotificationBadge() {
   const badge = document.querySelector(".notification-badge");
   if (!badge) {
@@ -1166,6 +1246,7 @@ function updateNotificationBadge() {
   badge.style.display = count > 0 ? "flex" : "none";
 }
 
+// Inicializa la barra lateral responsive con eventos de toggle y cierre
 function initSidebar() {
   const toggleBtn = document.getElementById("toggleBtn");
   const sidebar = document.getElementById("sidebar");
@@ -1205,6 +1286,8 @@ function initSidebar() {
   });
 }
 
+// Popula los selects de formulario de lead con opciones del API de Strapi
+// Muestra en: #programa, #estado, #fuente, #asesor, #prioridad, #tipo_proxima_accion
 async function hydrateLeadFormSelects(prefix = "") {
   const suffix = prefix ? `_${prefix}` : "";
   populateSelect(
@@ -1241,6 +1324,7 @@ async function hydrateLeadFormSelects(prefix = "") {
   );
 }
 
+// Extrae datos del formulario de lead y retorna objeto normalizado
 function getLeadFormPayload(prefix = "") {
   const suffix = prefix ? `_${prefix}` : "";
   return normalizeLead({
@@ -1280,6 +1364,7 @@ function getLeadFormPayload(prefix = "") {
   });
 }
 
+// Valida que un lead tenga datos obligatorios (nombres, apellidos, programa)
 function validateLeadPayload(lead) {
   if (!lead.nombres || !lead.apellidos || !lead.programa) {
     return "Completa nombres, apellidos y programa.";
@@ -1288,6 +1373,8 @@ function validateLeadPayload(lead) {
   return "";
 }
 
+// Actualiza el preview de lead del formulario (nombre, programa, iniciales)
+// Muestra en: #leadNameDisplay, #leadProgramDisplay, #leadAvatar
 function setLeadPreview(prefix, lead) {
   const suffix = prefix ? `_${prefix}` : "";
   setTextContent(`#leadNameDisplay${suffix}`, getLeadFullName(lead));
@@ -1295,6 +1382,7 @@ function setLeadPreview(prefix, lead) {
   setTextContent(`#leadAvatar${suffix}`, getLeadInitials(lead));
 }
 
+// Llena el formulario de lead con datos de un lead existente
 function populateLeadForm(lead) {
   const fields = {
     nombres: lead.nombres,
@@ -1326,12 +1414,15 @@ function populateLeadForm(lead) {
   renderLeadTimeline(lead);
 }
 
+// Selecciona la fila de un lead en la tabla como activa
 function setSelectedLeadRow(leadId) {
   document.querySelectorAll(".lead-list-row").forEach((row) => {
     row.classList.toggle("active", String(row.dataset.leadId) === String(leadId));
   });
 }
 
+// Renderiza el resumen de detalles del lead (fuente, asesor, prioridad, próxima acción)
+// Muestra en: #leadDetailSource, #leadDetailOwner, #leadDetailPriority, #leadDetailNextAction, #leadMetaChips
 function renderLeadDetailSummary(lead) {
   setTextContent("#leadDetailSource", getSourceLabel(lead.fuente));
   setTextContent("#leadDetailOwner", lead.asesor || "Sin asignar");
@@ -1356,6 +1447,8 @@ function renderLeadDetailSummary(lead) {
   }
 }
 
+// Renderiza el timeline de actividades del lead con iconos, fechas y descripciones
+// Muestra en: #leadTimelineList (sección de Trazabilidad en hoja de vida)
 function renderLeadTimeline(lead) {
   const timelineList = document.getElementById("leadTimelineList");
   if (!timelineList) {
@@ -1410,6 +1503,7 @@ function renderLeadTimeline(lead) {
   });
 }
 
+// Desactiva el modo edición del formulario de lead (bloquea inputs, oculta botones guardar/cancelar)
 function disableLeadEditMode() {
   const editBtn = document.getElementById("editBtn");
   const saveBtn = document.getElementById("saveBtn");
@@ -1432,6 +1526,7 @@ function disableLeadEditMode() {
   }
 }
 
+// Activa el modo edición del formulario de lead (desbloquea inputs, muestra botones guardar/cancelar)
 function enableLeadEditMode() {
   const editBtn = document.getElementById("editBtn");
   const saveBtn = document.getElementById("saveBtn");
@@ -1454,6 +1549,8 @@ function enableLeadEditMode() {
   }
 }
 
+// Abre la vista detallada de un lead mostrando su perfil completo
+// Muestra en: #leadDetailView con formulario, resumen y timeline
 function openLeadDetail(leadId) {
   const lead = getLeadById(leadId);
   const listView = document.getElementById("leadsListView");
@@ -1478,6 +1575,7 @@ function openLeadDetail(leadId) {
   }
 }
 
+// Vuelve a la vista de lista de leads desde la vista detallada
 function switchToLeadListView() {
   const listView = document.getElementById("leadsListView");
   const detailView = document.getElementById("leadDetailView");
@@ -1496,6 +1594,7 @@ function switchToLeadListView() {
   }
 }
 
+// Filtra leads por búsqueda y estado seleccionado
 function getFilteredLeads() {
   const searchValue = normalizeText(
     document.getElementById("leadSearchInput")?.value || "",
@@ -1520,6 +1619,7 @@ function getFilteredLeads() {
   });
 }
 
+// Obtiene leads desde la API de Strapi con población de relaciones
 async function getLeadsByStrapi() {
   const request = await fetch("https://strapi.ecpixcompany.com/api/leads?populate=*", {
     method: "GET",
@@ -1534,6 +1634,8 @@ async function getLeadsByStrapi() {
   return response.data;
 }
 
+// Renderiza la tabla de leads obtenidos de Strapi
+// Muestra en: #leadsTableBody con columnas de perfil, programa, fuente, asesor y estado
 async function renderLeadsList() {
   const tableBody = document.getElementById("leadsTableBody");
   if (!tableBody) {
@@ -1615,6 +1717,7 @@ async function renderLeadsList() {
   });
 }
 
+// Abre el modal para crear un nuevo lead
 function openCreateLeadModal() {
   const modal = document.getElementById("leadCreateModal");
   const form = document.getElementById("leadFormCreate");
@@ -1630,10 +1733,13 @@ function openCreateLeadModal() {
   document.getElementById("nombres_create")?.focus();
 }
 
+// Cierra el modal de creación de leads
 function closeCreateLeadModal() {
   document.getElementById("leadCreateModal")?.classList.remove("active");
 }
 
+// Renderiza la página del dashboard con KPIs, embudo de ventas, alertas y leads recientes
+// Muestra en: #dashboardTotalLeads, #dashboardActiveLeads, #dashboardQualifiedLeads, #dashboardConversionRate, #dashboardFunnel, #dashboardAlerts, #dashboardRecentTableBody
 function renderDashboard() {
   if (document.body.dataset.page !== "dashboard") {
     return;
@@ -1785,6 +1891,7 @@ function renderDashboard() {
   }
 }
 
+// Determina la categoría de conversación (sin-respuesta, nuevos, seguimiento)
 function getConversationCategory(conversation, lead) {
   if (conversation.sin_respuesta) {
     return "sin-respuesta";
@@ -1797,6 +1904,7 @@ function getConversationCategory(conversation, lead) {
   return "seguimiento";
 }
 
+// Filtra conversaciones por búsqueda y pestaña activa
 function getFilteredConversations() {
   const searchValue = normalizeText(
     document.getElementById("messagingSearchInput")?.value || "",
@@ -1822,6 +1930,8 @@ function getFilteredConversations() {
   );
 }
 
+// Renderiza la lista de conversaciones filtradas
+// Muestra en: #conversationList con items agrupados por canal y tiempo de respuesta
 function renderConversationList() {
   const list = document.getElementById("conversationList");
   if (!list) {
@@ -1883,6 +1993,8 @@ function renderConversationList() {
   });
 }
 
+// Renderiza el resumen de la conversación seleccionada (contacto, estado, actividades)
+// Muestra en: #chatContactAvatar, #chatContactName, #chatContactProgram, #chatChannel, #summaryStatus, #summaryChannel, #summaryCity, #summaryOwner, #summaryResponse, #summaryTag, #summaryNextAction, #conversationActivityList
 function renderConversationSummary(conversation) {
   const lead = getLeadById(conversation.lead_id);
 
@@ -1932,6 +2044,8 @@ function renderConversationSummary(conversation) {
   }
 }
 
+// Renderiza los mensajes de la conversación en el chat
+// Muestra en: #chatMessages con bubbles de entrada/salida y timestamps
 function renderConversationMessages(conversation) {
   const messagesContainer = document.getElementById("chatMessages");
   if (!messagesContainer) {
@@ -1959,6 +2073,8 @@ function renderConversationMessages(conversation) {
   });
 }
 
+// Renderiza los KPIs del módulo de mensajería
+// Muestra en: #messagingActiveCount, #messagingPendingCount, #messagingResponseCount, #messagingConversionCount
 function renderMessagingKpis() {
   const activeConversations = CRM_STATE.conversations.length;
   const pending = CRM_STATE.conversations.filter(
@@ -1982,6 +2098,7 @@ function renderMessagingKpis() {
   setTextContent("#messagingConversionCount", `${conversion}%`);
 }
 
+// Renderiza todo el módulo de mensajería (KPIs, lista de conversaciones, chat)
 function renderMessagingModule() {
   if (document.body.dataset.page !== "messaging") {
     return;
@@ -2008,6 +2125,8 @@ function renderMessagingModule() {
   renderConversationSummary(conversation);
 }
 
+// Envía un mensaje desde el compositor al historial de conversación
+// Registra la actividad en el lead y actualiza el estado de respuesta
 async function sendMessageFromComposer() {
   const input = document.getElementById("chatComposerInput");
   const conversation = getConversationById(CRM_STATE.currentConversationId);
@@ -2048,6 +2167,8 @@ async function sendMessageFromComposer() {
   showToast("Mensaje registrado en el historial local listo para Strapi.", "success");
 }
 
+// Renderiza los KPIs del pipeline (leads activos, vencidos, calificados, perdidos)
+// Muestra en: #pipelineKpiActive, #pipelineKpiOverdue, #pipelineKpiReady, #pipelineKpiLost
 function renderPipelineKpis() {
   setTextContent(
     "#pipelineKpiActive",
@@ -2067,6 +2188,7 @@ function renderPipelineKpis() {
   );
 }
 
+// Filtra leads en el pipeline por búsqueda y asesor seleccionado
 function getFilteredPipelineLeads() {
   const searchValue = normalizeText(
     document.getElementById("pipelineSearchInput")?.value || "",
@@ -2083,6 +2205,8 @@ function getFilteredPipelineLeads() {
   });
 }
 
+// Renderiza el resumen del lead seleccionado en el pipeline kanban
+// Muestra en: #pipelineSummary con estado, fuente, asesor, prioridad y notas
 function renderPipelineSummary() {
   const summary = document.getElementById("pipelineSummary");
   if (!summary) {
@@ -2134,6 +2258,8 @@ function renderPipelineSummary() {
   summary.append(name, program, metaList, notes);
 }
 
+// Construye una tarjeta de lead para el tablero kanban con datos básicos
+// Incluye soporte para drag & drop entre columnas de estado
 function buildPipelineCard(lead) {
   const card = document.createElement("article");
   card.className = "pipeline-card";
@@ -2180,6 +2306,8 @@ function buildPipelineCard(lead) {
   return card;
 }
 
+// Renderiza el tablero kanban completo con columnas de estado y drag & drop
+// Muestra en: #pipelineBoard con columnas dinámicas por cada estado
 function renderPipelineBoard() {
   if (document.body.dataset.page !== "pipeline") {
     return;
@@ -2261,6 +2389,8 @@ function renderPipelineBoard() {
   renderPipelineSummary();
 }
 
+// Renderiza gráfico de barras genérico para visualizar métricas
+// Muestra en: contenedores con IDs dinámicos (ej: #analyticsFunnel, #analyticsPrograms)
 function renderBarList(containerId, items, labelFormatter = (label) => label) {
   const container = document.getElementById(containerId);
   if (!container) {
@@ -2302,6 +2432,8 @@ function renderBarList(containerId, items, labelFormatter = (label) => label) {
   });
 }
 
+// Renderiza la página de análitica con KPIs, funnels, programas, fuentes, asesores y métricas de servicio
+// Muestra en: #analyticsTotalLeads, #analyticsConversionRate, #analyticsPendingTasks, #analyticsPendingChats, #analyticsFunnel, #analyticsPrograms, #analyticsSources, #analyticsAdvisors, #analyticsServiceBody
 function renderAnalyticsPage() {
   if (document.body.dataset.page !== "analytics") {
     return;
@@ -2377,6 +2509,7 @@ function renderAnalyticsPage() {
   }
 }
 
+// Renderiza una nube de etiquetas/chips a partir de una lista de valores
 function renderTagCloud(containerId, values) {
   const container = document.getElementById(containerId);
   if (!container) {
@@ -2392,6 +2525,8 @@ function renderTagCloud(containerId, values) {
   });
 }
 
+// Renderiza la página de configuración con estado de integración, campos, programas, asesores, fuentes y plantillas
+// Muestra en: #settingsIntegrationStatus, #settingsLeadFields, #settingsProgramsList, #settingsAdvisorsList, #settingsSourcesList, #settingsTemplatesList, #settingsCollectionsBody
 function renderSettingsPage() {
   if (document.body.dataset.page !== "settings") {
     return;
@@ -2483,6 +2618,7 @@ function renderSettingsPage() {
   }
 }
 
+// Crea un nuevo lead en Strapi mediante POST request
 async function createLead(data) {
   const request = await fetch("https://strapi.ecpixcompany.com/api/leads", {
     method: "POST",
@@ -2498,6 +2634,7 @@ async function createLead(data) {
   console.log("🐼 ~ response:", response);
 }
 
+// Vincula eventos del módulo de leads (búsqueda, filtros, creación, edición, guardado)
 async function bindLeadsModule() {
   const form = document.getElementById("leadForm");
   const createForm = document.getElementById("leadFormCreate");
@@ -2649,6 +2786,7 @@ async function bindLeadsModule() {
   });
 }
 
+// Inicializa la página de leads cargando datos y configurando eventos
 function initLeadsPage() {
   if (document.body.dataset.page !== "leads") {
     return;
@@ -2671,6 +2809,7 @@ function initLeadsPage() {
   }
 }
 
+// Vincula eventos del módulo de mensajería (búsqueda, pestañas, envío de mensajes)
 function bindMessagingModule() {
   if (document.body.dataset.messagingBound === "true") {
     return;
@@ -2702,6 +2841,7 @@ function bindMessagingModule() {
   });
 }
 
+// Inicializa la página de mensajería
 function initMessagingPage() {
   if (document.body.dataset.page !== "messaging") {
     return;
@@ -2711,6 +2851,7 @@ function initMessagingPage() {
   renderMessagingModule();
 }
 
+// Vincula eventos del módulo de pipeline (búsqueda, filtro de asesor)
 function bindPipelineModule() {
   if (document.body.dataset.pipelineBound === "true") {
     return;
@@ -2730,6 +2871,7 @@ function bindPipelineModule() {
     ?.addEventListener("change", renderPipelineBoard);
 }
 
+// Inicializa la página del pipeline kanban
 function initPipelinePage() {
   if (document.body.dataset.page !== "pipeline") {
     return;
@@ -2739,6 +2881,7 @@ function initPipelinePage() {
   renderPipelineBoard();
 }
 
+// Vincula eventos de la página de configuración (reset de datos demo)
 function bindSettingsPage() {
   if (document.body.dataset.settingsBound === "true") {
     return;
@@ -2759,6 +2902,7 @@ function bindSettingsPage() {
   });
 }
 
+// Inicializa la página de configuración
 function initSettingsPage() {
   if (document.body.dataset.page !== "settings") {
     return;
@@ -2768,6 +2912,7 @@ function initSettingsPage() {
   renderSettingsPage();
 }
 
+// Reinicia los datos demo de localStorage (no afecta Strapi)
 function resetDemoData() {
   localStorage.removeItem(CRM_STORAGE_KEYS.leads);
   localStorage.removeItem(CRM_STORAGE_KEYS.conversations);
@@ -2775,6 +2920,7 @@ function resetDemoData() {
   ensureLocalSeedData();
 }
 
+// Carga todos los datos del CRM (leads, conversaciones, configuración) desde localStorage o Strapi
 async function loadCRMData() {
   ensureLocalSeedData();
   CRM_STATE.settings = loadSettingsCollection();
@@ -2782,6 +2928,7 @@ async function loadCRMData() {
   CRM_STATE.conversations = await loadConversationCollection();
 }
 
+// Inicializa el CRM completo: carga datos, renderiza todas las vistas y vincula eventos
 async function initCRM() {
   initSidebar();
   await loadCRMData();
@@ -2795,6 +2942,8 @@ async function initCRM() {
   initSettingsPage();
 }
 
+// Objeto público del CRM expuesto en window para acceso desde consola o HTML
+// Permite inicializar, reiniciar datos y acceder a configuración
 window.CRM = {
   initCRM,
   resetDemoData,
@@ -2804,6 +2953,7 @@ window.CRM = {
   showToast,
 };
 
+// Evento que dispara la inicialización del CRM cuando el DOM está completamente cargado
 document.addEventListener("DOMContentLoaded", () => {
   initCRM();
 });
