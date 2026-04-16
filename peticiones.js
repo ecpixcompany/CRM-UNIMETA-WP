@@ -1,6 +1,6 @@
 // aqui consultamos la informacion
 export async function ObtenerEstadosLeads() {
-  // hacer solicitud a la api de strapi
+  // hacer solicitud a la api de strapiasas
   const response = await fetch("https://strapi.ecpixcompany.com/api/estados", {
     method: "GET",
     headers: {
