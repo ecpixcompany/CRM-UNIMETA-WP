@@ -1,3 +1,5 @@
+import { ObtenerEstadosLeads } from "./peticiones.js";
+
 const CRM_STORAGE_KEYS = {
   leads: "crm-unimeta-leads-v2",
   conversations: "crm-unimeta-conversations-v2",
@@ -1104,8 +1106,6 @@ function populateSelect(select, values, placeholder, selectedValue = "") {
 
     if (select.id.includes("fuente")) {
       option.textContent = getSourceLabel(value);
-    } else if (select.id.includes("estado")) {
-      option.textContent = getStatusMeta(value).label;
     } else if (select.id.includes("prioridad")) {
       option.textContent = getPriorityMeta(value).label;
     } else if (select.id.includes("tipo_proxima_accion")) {
@@ -1207,16 +1207,20 @@ function initSidebar() {
 
 async function hydrateLeadFormSelects(prefix = "") {
   const suffix = prefix ? `_${prefix}` : "";
-  populateSelect(
-    document.getElementById(`programa${suffix}`),
-    await getPrograms(),
-    "Selecciona un programa",
-  );
+  const estadosLeads = await ObtenerEstadosLeads();
+  const arrayEstados = estadosLeads.data.map((estado) => estado.NOMBRE_ESTADO);
+  console.log("🐼 ~ arrayEstados:", arrayEstados);
+
   populateSelect(
     document.getElementById(`estado${suffix}`),
-    CRM_STATE.settings.estados,
+    arrayEstados, // CRM_STATE.settings.estados,
     "Selecciona un estado",
-    "nuevo",
+    // "nuevo",
+  );
+  populateSelect(
+    document.getElementById(`programa${suffix}`),
+    CRM_STATE.settings.programas, // await getPrograms(),
+    "Selecciona un programa",
   );
   populateSelect(
     document.getElementById(`fuente${suffix}`),
@@ -2555,7 +2559,6 @@ async function bindLeadsModule() {
 
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
-    console.log("🐼 ~ event:", event);
 
     const currentLead = getLeadById(CRM_STATE.currentLeadId);
     if (!currentLead) {
