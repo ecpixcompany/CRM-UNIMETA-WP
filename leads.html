@@ -437,27 +437,6 @@
       </div>
     </div>
 
-    <script>
-      window.CRM_CONFIG = {
-        strapiEnabled: false,
-        strapiBaseUrl: "http://localhost:1337",
-        strapiApiPath: "/api",
-        endpoints: {
-          leads: "leads",
-        },
-        leadWritableFields: [
-          "nombres",
-          "apellidos",
-          "programa",
-          "cedula",
-          "celular",
-          "correo",
-          "ciudad",
-          "estado",
-        ],
-      };
-    </script>
-    <script type="module" src="funcionalidad.js"></script>
-    <script type="module" src="peticiones.js"></script>
+    <script type="module" src="leads/main.js"></script>
   </body>
 </html>
